@@ -30,6 +30,18 @@ app.get("/Users", (req, res) => {
     })
 });
 
+app.get("/UserPremium", (req, res) => {
+    const query = "SELECT HealthPremium FROM UserTable01 where Flag=3";
+    sql.query(conString, query, (err, rows) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            res.send(rows);
+        }
+    })
+});
+
 
 
 app.get("/Users/:id", (req, res) => {
@@ -110,6 +122,18 @@ app.get("/UserDependents/:id", (req, res) => {
     })
 });
 
+app.get("/DependentsCount", (req, res) => {
+    const query=`select count(DependentId) from Dependents01,UserTable01 where UserTable01.Flag=3 and Dependents01.UserId=UserTable01.UserId`;
+    sql.query(conString, query, (err, row) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            res.send(row);
+        }
+    })
+});
+
 app.get("/Emails",(req, res) => {
     const id=req.params.email;
     const query=`SELECT Email FROM UserTable01`;
@@ -126,6 +150,20 @@ app.get("/Emails",(req, res) => {
 app.delete("/Users/:id", (req, res) => {
     const id=req.params.id;
     query2=`Delete from UserTable01 where UserId=${id}`
+    sql.query(conString, query2, (err, rows) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            res.send(rows);
+        }
+    })
+});
+
+
+app.get("/UserId", (req, res) => {
+    const flag=req.params.flag;
+    query2=`Select Flag from UserTable01 where Flag=3`
     sql.query(conString, query2, (err, rows) => {
         if (err) {
             res.send(err);
@@ -177,31 +215,31 @@ app.post("/Dependents", (req, res) => {
     })
 })
 
-app.post("/Users", (req, res) => {
-    const body = req.body;
-    const query1 = `Insert into UserTable01 values('${body.UserName}','${body.Email}','${body.Password}',${body.Age},${body.Flag})`;
-    sql.query(conString, query1, (err, rows) => {
-        if (err) {
-            res.status(400).send(err.message);
-        }
-        else {
-            res.status(200).send("Users added successfully");
-        }
-    })
-})
 
 app.post("/Vehicles", (req, res) => {
+
     const body = req.body;
-    const query1 = `Insert into VehicleTable values('${body.RegistrationNumber}','${body.Model}',${body.Year},'${body.Type}',${body.UserId})`;
+
+    const query1 = `Insert into VehicleTable values('${body.RegistrationNumber}','${body.Model}',${body.Year},'${body.Type}',${body.UserId},${body.VehiclePremium})`;
+
     console.log(body.RegistrationNumber);
+
     sql.query(conString, query1, (err, rows) => {
+
         if (err) {
+
             res.status(400).send(err.message);
+
         }
+
         else {
+
             res.status(200).send("Vehicles added successfully");
+
         }
+
     })
+
 })
 
 app.put("/Users/:id/:flag", (req, res) => {
@@ -218,6 +256,154 @@ app.put("/Users/:id/:flag", (req, res) => {
         }
     })
 })
+
+app.put("/SetFlagZero", (req, res) => {
+    // const body = req.body;
+    const query1 = `Update UserTable01 set Flag=0 where Flag=3`;
+    sql.query(conString, query1, (err, rows) => {
+        if (err) {
+            res.status(400).send(err.message);
+        }
+        else {
+            res.status(200).send("User updated successfully");
+        }
+    })
+})
+
+
+app.put("/UserPackage/:level", (req, res) => {
+    // const body = req.body;
+    const level=req.params.level;
+    // const flag=req.params.flag;
+    const query1 = `Update UserTable01 set PackageLevel='${level}' where Flag=3`;
+    sql.query(conString, query1, (err, rows) => {
+        if (err) {
+            res.status(400).send(err.message);
+        }
+        else {
+            res.status(200).send("User updated successfully");
+        }
+    })
+})
+
+app.put("/UserPremium/:premium", (req, res) => {
+    // const body = req.body;
+    const premium=req.params.premium;
+    // const flag=req.params.flag;
+    const query1 = `Update UserTable01 set HealthPremium=${premium} where Flag=3`;
+    sql.query(conString, query1, (err, rows) => {
+        if (err) {
+            res.status(400).send(err.message);
+        }
+        else {
+            res.status(200).send("User updated successfully");
+        }
+    })
+})
+
+app.put("/UpdateVehicle/:year", (req, res) => {
+
+    // const body = req.body;
+    const year=req.params.year;
+    console.log(year);
+    const query1 = `Update VehicleTable set Year=${year} where Year=0`;
+    sql.query(conString, query1, (err, rows) => {
+        if (err) {
+            res.status(400).send(err.message);
+        }
+        else {
+            res.status(200).send("User updated successfully");
+        }
+    })
+})
+app.put("/UpdateVehiclePremium/:id", (req, res) => {
+    // const body = req.body;
+    const id=req.params.id;
+    console.log(id);
+    const query1 = `Update VehicleTable set VehiclePremium=${id} where Year=0`;
+    sql.query(conString, query1, (err, rows) => {
+        if (err) {
+            res.status(400).send(err.message);
+        }
+        else {
+            res.status(200).send("User updated successfully");
+        }
+    })
+})
+app.post("/Users", (req, res) => {
+
+    const body = req.body;
+
+    const query1 = `Insert into UserTable01 values('${body.UserName}','${body.Email}','${body.Password}','${body.DependentNameMobile}',${body.Age},${body.Flag},'${body.PackageLevel}',${body.HealthPremium})`;
+
+    sql.query(conString, query1, (err, rows) => {
+
+        if (err) {
+
+            res.status(400).send(err.message);
+
+        }
+
+        else {
+
+            res.status(200).send("Users added successfully");
+
+        }
+
+    })
+
+})
+
+app.get("/VehicleDependents", (req, res) => {
+
+    const id=req.params.id;
+
+    const query=`select VehicleId,RegistrationNumber,Model,Type from UserTable01,VehicleTable where UserTable01.Flag=3 and UserTable01.UserId=VehicleTable.UserId;`;
+
+    sql.query(conString, query, (err, row) => {
+
+        if (err) {
+
+            res.send(err);
+
+        }
+
+        else {
+
+            res.send(row);
+
+        }
+
+    })
+
+});
+
+app.post("/Vehicles", (req, res) => {
+
+    const body = req.body;
+
+    const query1 = `Insert into VehicleTable values('${body.RegistrationNumber}','${body.Model}',${body.Year},'${body.Type}',${body.UserId},${body.VehiclePremium})`;
+
+    console.log(body.RegistrationNumber);
+
+    sql.query(conString, query1, (err, rows) => {
+
+        if (err) {
+
+            res.status(400).send(err.message);
+
+        }
+
+        else {
+
+            res.status(200).send("Vehicles added successfully");
+
+        }
+
+    })
+
+})
+
 app.listen(2210, () => {
     console.log("Server at 2210");
 });
