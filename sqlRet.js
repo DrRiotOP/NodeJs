@@ -150,7 +150,7 @@ app.get("/Emails",(req, res) => {
 app.delete("/Users/:id", (req, res) => {
     const id=req.params.id;
     query2=`Delete from UserTable01 where UserId=${id}`
-    sql.query(conString, query2, (err, rows) => {
+    sql.query(conString, query2, (err,rows) => {
         if (err) {
             res.send(err);
         }
@@ -210,7 +210,7 @@ app.post("/Dependents", (req, res) => {
             res.status(400).send(err.message);
         }
         else {
-            res.status(200).send("Dependents added successfully");
+            res.status(200).send(rows);
         }
     })
 })
@@ -266,6 +266,18 @@ app.put("/SetFlagZero", (req, res) => {
         }
         else {
             res.status(200).send("User updated successfully");
+        }
+    })
+})
+
+app.get("/getPremiumLevel",(req,res)=>{
+    const query1 = `Select PackageLevel from UserTable01 where Flag=3`;
+    sql.query(conString, query1, (err, rows) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            res.send(rows);
         }
     })
 })
